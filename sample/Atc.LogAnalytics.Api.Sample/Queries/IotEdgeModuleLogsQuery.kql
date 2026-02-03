@@ -1,0 +1,10 @@
+IotEdgeModuleLogs_CL
+| take 10
+| project 
+    TimeGenerated, 
+    IotHub,
+    Device,
+    Module,
+    Stream,
+    LogLevel,
+    Text

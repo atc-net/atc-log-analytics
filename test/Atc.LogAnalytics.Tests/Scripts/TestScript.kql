@@ -1,0 +1,3 @@
+TestTable
+| where Name == name
+| take 10
