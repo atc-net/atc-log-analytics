@@ -1,0 +1,14 @@
+declare query_parameters (
+    computer:string = ""
+);
+Heartbeat
+| where isempty(computer) or Computer == computer
+| project
+    TimeGenerated,
+    Computer,
+    Category,
+    OSType,
+    Version,
+    ComputerEnvironment
+| order by TimeGenerated desc
+| take 100

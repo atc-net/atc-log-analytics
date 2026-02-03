@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Atc.LogAnalytics/Atc.LogAnalytics.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Atc.LogAnalytics.Tests/Atc.LogAnalytics.Tests.csproj" />
+  </Folder>
+  <Folder Name="/sample/">
+    <Project Path="sample/Atc.LogAnalytics.Sample/Atc.LogAnalytics.Sample.csproj" />
+    <Project Path="sample/Atc.LogAnalytics.Api.Sample/Atc.LogAnalytics.Api.Sample.csproj" />
+  </Folder>
+</Solution>

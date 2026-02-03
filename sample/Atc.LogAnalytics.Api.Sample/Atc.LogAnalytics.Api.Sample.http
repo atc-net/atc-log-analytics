@@ -1,0 +1,14 @@
+@Atc.LogAnalytics.Api.Sample_HostAddress = https://localhost:46712
+@computer = mycomputer
+
+### GetHeartbeats
+
+GET {{Atc.LogAnalytics.Api.Sample_HostAddress}}/heartbeats
+Accept: application/json
+
+### GetHeartbeats with computer filter
+
+GET {{Atc.LogAnalytics.Api.Sample_HostAddress}}/heartbeats?computer={{computer}}
+Accept: application/json
+
+###

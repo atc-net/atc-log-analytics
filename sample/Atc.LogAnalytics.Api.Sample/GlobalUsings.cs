@@ -1,0 +1,10 @@
+global using Atc.LogAnalytics;
+global using Atc.LogAnalytics.Api.Sample.Contracts;
+global using Atc.LogAnalytics.Api.Sample.Extensions;
+global using Atc.LogAnalytics.Api.Sample.Queries;
+global using Atc.LogAnalytics.Extensions;
+global using Atc.LogAnalytics.Options;
+global using Azure.Identity;
+global using Azure.Monitor.Query.Logs;
+global using Microsoft.AspNetCore.Mvc;
+global using Scalar.AspNetCore;
