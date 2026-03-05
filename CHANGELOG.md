@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/atc-net/atc-log-analytics/compare/v1.1.1...v1.1.2) (2026-03-05)
+
+
+### Bug Fixes
+
+* align naming and correct README documentation ([4cd7214](https://github.com/atc-net/atc-log-analytics/commit/4cd72149c130936c83efc8ba206d214e42922621))
+
 ## [1.1.1](https://github.com/atc-net/atc-log-analytics/compare/v1.1.0...v1.1.1) (2026-03-05)
 
 
