@@ -8,7 +8,7 @@ public sealed class LogAnalyticsProcessorTests
     public LogAnalyticsProcessorTests()
     {
         scriptHandlerFactory = Substitute.For<IScriptHandlerFactory>();
-        sut = new LogAnalyticsProcessor(scriptHandlerFactory, connectionName: null);
+        sut = new LogAnalyticsProcessor(scriptHandlerFactory, configurationName: null);
     }
 
     [Fact]
@@ -69,20 +69,20 @@ public sealed class LogAnalyticsProcessorTests
     }
 
     [Fact]
-    public async Task ExecuteWorkspaceQuery_WithConnectionName_PassesConnectionNameToFactory()
+    public async Task ExecuteWorkspaceQuery_WithConfigurationName_PassesConfigurationNameToFactory()
     {
         // Arrange
-        var processor = new LogAnalyticsProcessor(scriptHandlerFactory, "MyConnection");
+        var processor = new LogAnalyticsProcessor(scriptHandlerFactory, "Production");
         var query = Substitute.For<ILogAnalyticsQuery<TestRecord>>();
         var handler = Substitute.For<IWorkspaceQueryHandler<TestRecord>>();
 
-        scriptHandlerFactory.CreateWorkspaceQueryHandler<TestRecord>("MyConnection").Returns(handler);
+        scriptHandlerFactory.CreateWorkspaceQueryHandler<TestRecord>("Production").Returns(handler);
 
         // Act
         await processor.ExecuteWorkspaceQuery(query, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
-        scriptHandlerFactory.Received(1).CreateWorkspaceQueryHandler<TestRecord>("MyConnection");
+        scriptHandlerFactory.Received(1).CreateWorkspaceQueryHandler<TestRecord>("Production");
     }
 
     [Fact]

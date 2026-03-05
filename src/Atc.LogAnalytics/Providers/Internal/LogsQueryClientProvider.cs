@@ -12,15 +12,15 @@ internal sealed class LogsQueryClientProvider : ILogsQueryClientProvider
         IOptionsMonitor<AtcLogAnalyticsOptions> monitor)
         => this.monitor = monitor;
 
-    public LogsQueryClient GetClient(string? connectionName = null)
+    public LogsQueryClient GetClient(string? configurationName = null)
         => clients.GetOrAdd(
-            connectionName ?? string.Empty,
+            configurationName ?? string.Empty,
             static (name, monitor) => CreateClient(monitor.Get(name)),
             monitor);
 
-    public string GetWorkspaceId(string? connectionName = null)
+    public string GetWorkspaceId(string? configurationName = null)
     {
-        var options = monitor.Get(connectionName ?? string.Empty);
+        var options = monitor.Get(configurationName ?? string.Empty);
 
         if (string.IsNullOrEmpty(options.WorkspaceId))
         {

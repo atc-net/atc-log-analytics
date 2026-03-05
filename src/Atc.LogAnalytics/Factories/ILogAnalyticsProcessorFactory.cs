@@ -8,10 +8,10 @@ public interface ILogAnalyticsProcessorFactory
     /// <summary>
     /// Creates an instance of <see cref="ILogAnalyticsProcessor"/> configured with the specified connection settings.
     /// </summary>
-    /// <param name="connectionName">
-    /// An optional connection name that identifies the Log Analytics connection to be used.
-    /// If <see langword="null"/>, the default connection is utilized.
+    /// <param name="configurationName">
+    /// An optional configuration name that identifies the Log Analytics configuration to be used.
+    /// If <see langword="null"/>, the default configuration is utilized.
     /// </param>
     /// <returns>A configured <see cref="ILogAnalyticsProcessor"/>.</returns>
-    ILogAnalyticsProcessor Create(string? connectionName = null);
+    ILogAnalyticsProcessor Create(string? configurationName = null);
 }
