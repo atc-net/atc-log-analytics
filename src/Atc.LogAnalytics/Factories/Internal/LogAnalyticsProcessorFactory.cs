@@ -6,8 +6,8 @@ internal sealed class LogAnalyticsProcessorFactory(
     : ILogAnalyticsProcessorFactory
 {
     /// <inheritdoc />
-    public ILogAnalyticsProcessor Create(string? connectionName = null)
+    public ILogAnalyticsProcessor Create(string? configurationName = null)
         => new LogAnalyticsProcessor(
             scriptHandlerFactory,
-            connectionName);
+            configurationName);
 }

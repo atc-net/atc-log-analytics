@@ -25,7 +25,6 @@ Atc.LogAnalytics is a .NET library that wraps the `Azure.Monitor.Query.Logs` SDK
     - [Cross-Workspace Queries](#cross-workspace-queries)
     - [Custom Endpoints](#custom-endpoints)
   - [Authentication](#authentication)
-- [Sample](#sample)
 - [Requirements](#requirements)
 - [How to contribute](#how-to-contribute)
 
@@ -198,7 +197,7 @@ var result = await processor.ExecuteResourceQuery(
 | Troubleshooting a specific VM issue | Resource query |
 | Aggregating logs across multiple apps | Workspace query |
 | Analyzing one App Service's exceptions | Resource query |
-| Cross-workspace queries | Workspace query with `AdditionalWorkspaces` |
+| Cross-workspace queries | Workspace query with `AdditionalWorkspaces` query option |
 
 ## Configuration Options
 
@@ -209,7 +208,6 @@ var result = await processor.ExecuteResourceQuery(
 | `WorkspaceId` | `string` | The Log Analytics workspace ID (GUID). Required for workspace queries. |
 | `Credential` | `TokenCredential` | Azure credential for authentication. Required. |
 | `Endpoint` | `Uri?` | Custom endpoint URI. Defaults to Azure public cloud. |
-| `AdditionalWorkspaces` | `IList<string>` | Additional workspace IDs for cross-workspace queries. |
 
 ### AtcLogAnalyticsQueryOptions
 
@@ -217,18 +215,15 @@ Per-query options that can be passed when executing a query.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `TimeRange` | `QueryTimeRange?` | `null` | Time range for the query. If null, query must specify time filter. |
+| `TimeRange` | `LogsQueryTimeRange?` | `null` | Time range for the query. If null, query must specify time filter. |
 | `ServerTimeout` | `TimeSpan?` | `null` | Server-side query timeout. |
-| `IncludeStatistics` | `bool` | `false` | Include query execution statistics in response. |
-| `IncludeVisualization` | `bool` | `false` | Include visualization data in response. |
 | `AdditionalWorkspaces` | `IList<string>?` | `null` | Additional workspaces for this specific query. |
 
 ```csharp
 var options = new AtcLogAnalyticsQueryOptions
 {
-    TimeRange = new QueryTimeRange(TimeSpan.FromDays(7)),
+    TimeRange = new LogsQueryTimeRange(TimeSpan.FromDays(7)),
     ServerTimeout = TimeSpan.FromMinutes(5),
-    IncludeStatistics = true
 };
 
 var result = await processor.ExecuteWorkspaceQuery(query, options, ct);
@@ -261,16 +256,9 @@ var processor = processorFactory.Create("Production");
 
 ### Cross-Workspace Queries
 
-```csharp
-// Option 1: Configure at registration
-services.ConfigureLogAnalytics(options =>
-{
-    options.WorkspaceId = "primary-workspace";
-    options.Credential = new DefaultAzureCredential();
-    options.AdditionalWorkspaces.Add("secondary-workspace");
-});
+Cross-workspace queries are configured per-query via `AtcLogAnalyticsQueryOptions`:
 
-// Option 2: Configure per-query
+```csharp
 var queryOptions = new AtcLogAnalyticsQueryOptions
 {
     AdditionalWorkspaces = new List<string> { "secondary-workspace" }
@@ -314,19 +302,6 @@ options.Credential = new ManagedIdentityCredential();
 // User-assigned managed identity
 options.Credential = new ManagedIdentityCredential("client-id");
 ```
-
-## Thread Safety
-
-- `ILogAnalyticsProcessorFactory` is thread-safe and registered as singleton
-- `ILogAnalyticsProcessor` instances are thread-safe and can be reused
-- Query objects (records) are immutable and thread-safe
-
-# Sample
-
-| Sample | Description |
-|--------|-------------|
-| [Atc.LogAnalytics.Api.Sample](sample/Atc.LogAnalytics.Api.Sample) | Minimal API with Scalar UI (`/scalar`) |
-| [Atc.LogAnalytics.Sample](sample/Atc.LogAnalytics.Sample) | Console application |
 
 # Requirements
 

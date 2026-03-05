@@ -7,13 +7,13 @@ internal sealed class LogAnalyticsProcessor : ILogAnalyticsProcessor
 
     public LogAnalyticsProcessor(
         IScriptHandlerFactory factory,
-        string? connectionName)
+        string? configurationName)
     {
         this.factory = factory;
-        ConnectionName = connectionName;
+        ConfigurationName = configurationName;
     }
 
-    public string? ConnectionName { get; }
+    public string? ConfigurationName { get; }
 
     public Task<T[]?> ExecuteWorkspaceQuery<T>(
         ILogAnalyticsQuery<T> query,
@@ -32,7 +32,7 @@ internal sealed class LogAnalyticsProcessor : ILogAnalyticsProcessor
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var handler = factory.CreateWorkspaceQueryHandler<T>(ConnectionName);
+        var handler = factory.CreateWorkspaceQueryHandler<T>(ConfigurationName);
         return handler.ExecuteAsync(query, options, cancellationToken);
     }
 
@@ -57,7 +57,7 @@ internal sealed class LogAnalyticsProcessor : ILogAnalyticsProcessor
         ArgumentNullException.ThrowIfNull(query);
         ArgumentNullException.ThrowIfNull(resourceId);
 
-        var handler = factory.CreateResourceQueryHandler<T>(ConnectionName);
+        var handler = factory.CreateResourceQueryHandler<T>(ConfigurationName);
         return handler.ExecuteAsync(query, resourceId, options, cancellationToken);
     }
 }
