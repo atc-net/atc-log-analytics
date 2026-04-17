@@ -14,6 +14,12 @@ internal static partial class LogAnalyticsQueryExtensions
     /// All string values are escaped via <see cref="EscapeKqlString"/> and parameter keys are
     /// validated against <see cref="ValidParameterKeyRegex"/> to prevent injection attacks.
     /// </para>
+    /// <para>
+    /// If the script begins with a <c>declare query_parameters(...)</c> block, that block is stripped
+    /// before the <c>let</c> statements are prepended. This lets authors use the standard KQL
+    /// <c>declare query_parameters</c> convention for editor tooling and standalone Azure Portal
+    /// testing, without clashing with the injected <c>let</c> bindings at runtime.
+    /// </para>
     /// </summary>
     /// <typeparam name="T">The type of the query result.</typeparam>
     /// <param name="query">The query containing script and parameters.</param>
@@ -37,9 +43,19 @@ internal static partial class LogAnalyticsQueryExtensions
             sb.AppendLine();
         }
 
-        sb.Append(query.Script);
+        sb.Append(StripDeclareQueryParameters(query.Script));
         return sb.ToString();
     }
+
+    /// <summary>
+    /// Removes a leading <c>declare query_parameters(...)</c> block from the script, if present.
+    /// Only strips a block that appears at the start of the script (whitespace allowed), matching
+    /// the KQL rule that <c>declare query_parameters</c> must be the first statement in the query.
+    /// </summary>
+    /// <param name="script">The KQL script to inspect.</param>
+    /// <returns>The script with any leading <c>declare query_parameters(...)</c> block removed.</returns>
+    internal static string StripDeclareQueryParameters(string script)
+        => DeclareQueryParametersRegex().Replace(script, string.Empty);
 
     internal static string FormatKqlValue(object? value)
         => value switch
@@ -94,4 +110,7 @@ internal static partial class LogAnalyticsQueryExtensions
 
     [GeneratedRegex("^[a-zA-Z_][a-zA-Z0-9_]*$", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
     private static partial Regex ValidParameterKeyRegex();
+
+    [GeneratedRegex(@"\A\s*declare\s+query_parameters\s*\([^)]*\)\s*;\s*", RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex DeclareQueryParametersRegex();
 }
