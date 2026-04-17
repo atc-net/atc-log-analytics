@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/atc-net/atc-log-analytics/compare/v1.1.2...v1.2.0) (2026-04-17)
+
+
+### Features
+
+* support optional `declare query_parameters` block in .kql scripts ([18fd3ee](https://github.com/atc-net/atc-log-analytics/commit/18fd3ee4050c818589468ffb0caa1ee0255b40aa))
+
 ## [1.1.2](https://github.com/atc-net/atc-log-analytics/compare/v1.1.1...v1.1.2) (2026-03-05)
 
 
