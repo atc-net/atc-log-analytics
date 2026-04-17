@@ -80,6 +80,82 @@ public sealed class LogAnalyticsQueryExtensionsTests
         result.Should().EndWith("Heartbeat | take topCount");
     }
 
+    [Fact]
+    public void ToKql_WithDeclareQueryParameters_StripsDeclareBeforePrependingLets()
+    {
+        // Arrange — a script using the standard KQL "declare query_parameters" convention.
+        // The library must strip that block before prepending its own let statements, otherwise
+        // Kusto rejects the query with "Let with the same name was already used in current context".
+        var script =
+            """
+            declare query_parameters (
+                computer:string = "",
+                topCount:int = 10
+            );
+            Heartbeat
+            | where isempty(computer) or Computer == computer
+            | take topCount
+            """;
+        var query = new StubQuery(
+            script,
+            new Dictionary<string, object?>(StringComparer.Ordinal)
+            {
+                ["computer"] = "mypc",
+                ["topCount"] = 50,
+            });
+
+        // Act
+        var result = query.ToKql();
+
+        // Assert
+        result.Should().Contain("let computer = \"mypc\";");
+        result.Should().Contain("let topCount = 50;");
+        result.Should().NotContain("declare query_parameters");
+        result.Should().Contain("Heartbeat");
+    }
+
+    [Theory]
+    [InlineData(
+        """
+        declare query_parameters (computer:string = "");
+        Heartbeat | take 10
+        """,
+        "Heartbeat | take 10")]
+    [InlineData(
+        """
+        declare query_parameters (
+            computer:string = "",
+            topCount:int = 10
+        );
+        Heartbeat | take topCount
+        """,
+        "Heartbeat | take topCount")]
+    [InlineData("   declare query_parameters(a:string=\"\");\nT | take 1", "T | take 1")]
+    [InlineData("DECLARE Query_Parameters(a:string=\"\");\nT | take 1", "T | take 1")]
+    public void StripDeclareQueryParameters_RemovesLeadingDeclareBlock(
+        string input,
+        string expectedBody)
+    {
+        // Act
+        var result = LogAnalyticsQueryExtensions.StripDeclareQueryParameters(input);
+
+        // Assert
+        result.Should().Be(expectedBody);
+    }
+
+    [Fact]
+    public void StripDeclareQueryParameters_NoDeclare_ReturnsScriptUnchanged()
+    {
+        // Arrange
+        const string script = "Heartbeat | take 10";
+
+        // Act
+        var result = LogAnalyticsQueryExtensions.StripDeclareQueryParameters(script);
+
+        // Assert
+        result.Should().Be(script);
+    }
+
     [Theory]
     [InlineData(true, "true")]
     [InlineData(false, "false")]

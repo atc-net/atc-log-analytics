@@ -137,6 +137,32 @@ ILogAnalyticsScript
 - File must be in the same namespace/folder as the query class
 - Parameters are referenced in KQL using camelCase naming
 
+#### `declare query_parameters` is supported (and optional)
+
+Azure Log Analytics does not expose a native parameter-binding API on its SDK. To work around that, Atc.LogAnalytics prepends the parameters from your record as `let` statements at runtime (e.g. `let computerName = "mypc";`) before sending the query.
+
+You may *optionally* prefix your `.kql` file with a standard KQL `declare query_parameters(...)` block — the library strips that block before prepending the `let` statements, so there is no conflict. Doing so is useful because:
+
+- IDE/editor tooling (VS Code KQL extension, Kusto Explorer) recognises the parameters.
+- The file is standalone-runnable in the Azure Portal's Log Analytics query editor using the declared defaults.
+
+> Note: only a `declare query_parameters(...)` block at the **very start** of the script is stripped (leading whitespace is allowed). A `declare` statement further down the script is left untouched.
+
+Example:
+
+```kql
+declare query_parameters (
+    computerName:string = "",
+    topCount:int = 10
+);
+Heartbeat
+| where isempty(computerName) or Computer == computerName
+| top topCount by TimeGenerated desc
+| project TimeGenerated, Computer, OSType, Version
+```
+
+At runtime, the `declare` block is stripped and the library injects `let computerName = "..."; let topCount = ...;` from the query record's properties.
+
 ### Parameter Mapping
 
 | C# Type | KQL Type | Example |
